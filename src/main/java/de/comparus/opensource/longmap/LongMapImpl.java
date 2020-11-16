@@ -91,8 +91,7 @@ public class LongMapImpl<V> implements LongMap<V> {
     
     private V putIntoNewBucketList(Node<V> head, long key, V value) {
         Node<V> node = head;
-        for(; node != null; head = node, node = node.next ) {
-        }
+        for(; node != null; head = node, node = node.next );
         node = new Node(key, value, null);
         head.next = node;
         size++;
