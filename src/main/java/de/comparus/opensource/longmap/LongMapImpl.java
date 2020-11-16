@@ -1,6 +1,7 @@
 package de.comparus.opensource.longmap;
 
 import java.lang.reflect.Array;
+import java.util.HashMap;
 
 public class LongMapImpl<V> implements LongMap<V> {
     
@@ -15,9 +16,20 @@ public class LongMapImpl<V> implements LongMap<V> {
     }
     
     public LongMapImpl(int buckets) {
+        if (buckets < 0) {
+            throw new IllegalStateException("bed number for buckets");
+        }
         this.size = 0;
-        this.buckets = buckets;
-        nodes = new Node[buckets];
+        this.buckets = nearestPowerOfTwo(buckets);
+        nodes = new Node[this.buckets];
+    }
+    
+    private int nearestPowerOfTwo(int bucket) {
+        int powerOfTwo = 1;
+        while (powerOfTwo < bucket) {
+            powerOfTwo <<= 1;
+        }
+        return powerOfTwo;
     }
     
     @Override

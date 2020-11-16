@@ -6,6 +6,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LongMapImplTest {
   
+  @Test()
+  void shouldCatchIllegalStateException() throws IllegalStateException{
+    assertThrows(IllegalStateException.class, () -> new LongMapImpl<>(-5));
+  }
+  
   @Test
   void shouldPutTwoStrings() {
     LongMapImpl<String> longMap = new LongMapImpl<>();
