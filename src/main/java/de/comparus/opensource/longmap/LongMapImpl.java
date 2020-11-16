@@ -20,35 +20,33 @@ public class LongMapImpl<V> implements LongMap<V> {
         nodes = new Node[buckets];
     }
     
+    @Override
     public V put(long key, V value) {
     
-        V val = putInto(nodes, key, value, true);
         if(verifyLoadFactor()) {
             rehashMap();
         }
+        V val = putInto(nodes, key, value);
         return val;
     }
     
-    private V putInto(Node[] nodes, long key, V value, boolean sizeFactor) {
+    private V putInto(Node[] nodes, long key, V value) {
         int pos = getBucketNumber(key);
-        V val = nodes[pos] == null ? putIntoBucket(nodes, pos, key, value, sizeFactor)
-                : (V) putIntoBucketList(nodes[pos], key, value, sizeFactor);
-        return val;
+        return nodes[pos] == null ? putIntoBucket(nodes, pos, key, value)
+                : (V) putIntoBucketList(nodes[pos], key, value);
     }
     
     private int getBucketNumber(long key) {
         return Long.hashCode(key) & buckets - 1;
     }
     
-    private V putIntoBucket(Node[] nodes, int pos, long key, V value, boolean sizeFactor) {
+    private V putIntoBucket(Node[] nodes, int pos, long key, V value) {
         nodes[pos] = new Node<>(key, value, null);
-        if (sizeFactor){
-            size++;
-        }
+        size++;
         return (V) nodes[pos].value;
     }
     
-    private V putIntoBucketList(Node<V> head, long key, V value, boolean sizeFactor) {
+    private V putIntoBucketList(Node<V> head, long key, V value) {
         Node<V> node = head;
         for(; node != null; head = node, node = node.next ) {
             if (node.key == key) {
@@ -58,27 +56,50 @@ public class LongMapImpl<V> implements LongMap<V> {
         }
         node = new Node(key, value, null);
         head.next = node;
-        if (sizeFactor){
-            size++;
-        }
+        size++;
         return node.value;
     }
     
     private boolean verifyLoadFactor() {
-        return size > buckets * MAX_LOAD_FACTOR;
+        return size + 1 > buckets * MAX_LOAD_FACTOR;
     }
     
     private void rehashMap() {
-        Node<V>[] newNodes = new Node[buckets <<= 1];
-        for (int i = 0; i < buckets >> 1; i++) {
+        long oldBuckets = buckets;
+        buckets <<= 1;
+        Node<V>[] newNodes = new Node[buckets];
+        for (int i = 0; i < oldBuckets; i++) {
             Node<V> node = nodes[i];
             for(; node != null; node = node.next ) {
-                putInto(newNodes, node.key, node.value, false);
+                putIntoNewMap(newNodes, node.key, node.value);
             }
         }
         nodes = newNodes;
     }
     
+    private V putIntoNewMap(Node[] nodes, long key, V value) {
+        int pos = getBucketNumber(key);
+        return nodes[pos] == null ? putIntoNewBucket(nodes, pos, key, value)
+                : (V) putIntoNewBucketList(nodes[pos], key, value);
+    }
+    
+    private V putIntoNewBucket(Node[] nodes, int pos, long key, V value) {
+        nodes[pos] = new Node<>(key, value, null);
+        size++;
+        return (V) nodes[pos].value;
+    }
+    
+    private V putIntoNewBucketList(Node<V> head, long key, V value) {
+        Node<V> node = head;
+        for(; node != null; head = node, node = node.next ) {
+        }
+        node = new Node(key, value, null);
+        head.next = node;
+        size++;
+        return node.value;
+    }
+    
+    @Override
     public V get(long key) {
         Node<V> node;
         return (node = getNode(key)) == null ? null : node.value;
@@ -96,6 +117,7 @@ public class LongMapImpl<V> implements LongMap<V> {
         return null;
     }
     
+    @Override
     public V remove(long key) {
         int pos = getBucketNumber(key);
         if(nodes[pos] != null){
@@ -118,14 +140,17 @@ public class LongMapImpl<V> implements LongMap<V> {
         return null;
     }
     
+    @Override
     public boolean isEmpty() {
         return size > 0;
     }
     
+    @Override
     public boolean containsKey(long key) {
         return getNode(key) != null;
     }
     
+    @Override
     public boolean containsValue(V value) {
         for (int i = 0; i < buckets; i++) {
             Node<V> node = nodes[i];
@@ -138,6 +163,7 @@ public class LongMapImpl<V> implements LongMap<V> {
         return false;
     }
     
+    @Override
     public long[] keys() {
         if (size > 0) {
             long[] keys = new long[size];
@@ -158,6 +184,7 @@ public class LongMapImpl<V> implements LongMap<V> {
         }
     }
     
+    @Override
     public V[] values() {
         return getArrayValues();
     }
@@ -178,10 +205,12 @@ public class LongMapImpl<V> implements LongMap<V> {
         return vs;
     }
     
+    @Override
     public long size() {
         return size;
     }
     
+    @Override
     public void clear() {
         buckets = CAPACITY_BUCKETS;
         size = 0;
