@@ -1,45 +1,30 @@
 package de.comparus.opensource.longmap;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
 
 public class LongMapImpl<V> implements LongMap<V> {
     
     private static final int CAPACITY_BUCKETS = 1 << 3;
-    private int capacityBuckets;
+    private static final float MAX_LOAD_FACTOR = 0.75f;
+    private int buckets;
     private int size;
     private Node<V>[] nodes;
-    private static final float MAX_LOAD = 0.75f;
-    private float currentLoad;
     
     public LongMapImpl() {
         clear();
     }
     
-    public LongMapImpl(int capacityBuckets) {
+    public LongMapImpl(int buckets) {
         this.size = 0;
-        this.capacityBuckets = capacityBuckets;
-        nodes = new Node[capacityBuckets];
-    }
-    
-    
-    private static class Node<V> {
-        long key;
-        V value;
-        Node next;
-        
-        public Node(long key, V value, Node next) {
-            this.key = key;
-            this.value = value;
-            this.next = next;
-        }
+        this.buckets = buckets;
+        nodes = new Node[buckets];
     }
     
     public V put(long key, V value) {
     
         V val = putInto(nodes, key, value, true);
-        if(loadFactorTest()) {
-            resizeCapacityBuckets();
+        if(verifyLoadFactor()) {
+            rehashMap();
         }
         return val;
     }
@@ -52,7 +37,7 @@ public class LongMapImpl<V> implements LongMap<V> {
     }
     
     private int getBucketNumber(long key) {
-        return Long.hashCode(key) & capacityBuckets - 1;
+        return Long.hashCode(key) & buckets - 1;
     }
     
     private V putIntoBucket(Node[] nodes, int pos, long key, V value, boolean sizeFactor) {
@@ -79,13 +64,13 @@ public class LongMapImpl<V> implements LongMap<V> {
         return node.value;
     }
     
-    private boolean loadFactorTest() {
-        return size > capacityBuckets * MAX_LOAD;
+    private boolean verifyLoadFactor() {
+        return size > buckets * MAX_LOAD_FACTOR;
     }
     
-    private void resizeCapacityBuckets() {
-        Node<V>[] newNodes = new Node[capacityBuckets <<= 1];
-        for (int i = 0; i < capacityBuckets >> 1; i++) {
+    private void rehashMap() {
+        Node<V>[] newNodes = new Node[buckets <<= 1];
+        for (int i = 0; i < buckets >> 1; i++) {
             Node<V> node = nodes[i];
             for(; node != null; node = node.next ) {
                 putInto(newNodes, node.key, node.value, false);
@@ -138,11 +123,19 @@ public class LongMapImpl<V> implements LongMap<V> {
     }
     
     public boolean containsKey(long key) {
-        return Arrays.stream(keys()).anyMatch(x -> x == key);
+        return getNode(key) != null;
     }
     
     public boolean containsValue(V value) {
-        return Arrays.stream(getArrayValues()).anyMatch(i -> i.equals(value));
+        for (int i = 0; i < buckets; i++) {
+            Node<V> node = nodes[i];
+            for(; node != null; node = node.next ) {
+                if (node.value.equals(value)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     public long[] keys() {
@@ -156,7 +149,7 @@ public class LongMapImpl<V> implements LongMap<V> {
     
     private void getKeys(long[] keys) {
         int pos = 0;
-        for (int i = 0; i < capacityBuckets; i++) {
+        for (int i = 0; i < buckets; i++) {
             Node<V> node = nodes[i];
             for(; node != null; node = node.next ) {
                 keys[pos] = node.key;
@@ -172,7 +165,7 @@ public class LongMapImpl<V> implements LongMap<V> {
     private V[] getArrayValues() {
         V[] vs = null;
         int pos = 0;
-        for (int i = 0; i < capacityBuckets; i++) {
+        for (int i = 0; i < buckets; i++) {
             Node<V> node = nodes[i];
             for(; node != null; node = node.next ) {
                 if (pos == 0) {
@@ -190,8 +183,21 @@ public class LongMapImpl<V> implements LongMap<V> {
     }
     
     public void clear() {
-        capacityBuckets = CAPACITY_BUCKETS;
+        buckets = CAPACITY_BUCKETS;
         size = 0;
-        nodes = new Node[capacityBuckets];
+        nodes = new Node[buckets];
     }
+  
+  
+  private static class Node<V> {
+    long key;
+    V value;
+    Node next;
+    
+    public Node(long key, V value, Node next) {
+      this.key = key;
+      this.value = value;
+      this.next = next;
+    }
+  }
 }
