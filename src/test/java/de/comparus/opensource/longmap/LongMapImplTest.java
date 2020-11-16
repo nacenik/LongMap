@@ -174,14 +174,15 @@ class LongMapImplTest {
   
   @Test
   void shouldReturnArrayOfValues() {
-    String[] expectedKeys = new String[5];
+    String[] expectedValues= new String[5];
     LongMapImpl<String> longMap = new LongMapImpl<>();
-    for (int i = 0; i < expectedKeys.length; i++) {
-      expectedKeys[i] = String.valueOf(i);
-      longMap.put(i, expectedKeys[i]);
+    for (int i = 0; i < expectedValues.length; i++) {
+      expectedValues[i] = String.valueOf(i);
+      longMap.put(i, expectedValues[i]);
     }
   
-    assertArrayEquals(expectedKeys, longMap.values());
+    String[] actualValues = longMap.values();
+    assertArrayEquals(expectedValues, actualValues);
   }
   
   @Test

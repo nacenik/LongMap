@@ -113,7 +113,7 @@ public class LongMapImpl<V> implements LongMap<V> {
     }
     
     private int getBucketNumber(long key) {
-        return Long.hashCode(key) & buckets - 1;
+        return Long.hashCode(key) & (buckets - 1);
     }
     
     private V putIntoBucket(Node[] nodes, int pos, long key, V value) {
