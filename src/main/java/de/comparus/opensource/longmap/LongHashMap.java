@@ -2,7 +2,7 @@ package de.comparus.opensource.longmap;
 
 import java.lang.reflect.Array;
 
-public class LongMapImpl<V> implements LongMap<V> {
+public class LongHashMap<V> implements LongMap<V> {
     
     private static final int CAPACITY_BUCKETS = 1 << 3;
     private static final float MAX_LOAD_FACTOR = 0.75f;
@@ -10,11 +10,11 @@ public class LongMapImpl<V> implements LongMap<V> {
     private int size;
     private Node<V>[] nodes;
     
-    public LongMapImpl() {
+    public LongHashMap() {
         clear();
     }
     
-    public LongMapImpl(int buckets) {
+    public LongHashMap(int buckets) {
         if (buckets < 0) {
             throw new IllegalStateException("bed number for buckets");
         }
