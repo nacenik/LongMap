@@ -161,7 +161,6 @@ public class LongHashMap<V> implements LongMap<V> {
     
     private V putIntoNewBucket(Node[] nodes, int pos, long key, V value) {
         nodes[pos] = new Node<>(key, value, null);
-        size++;
         return (V) nodes[pos].value;
     }
     
@@ -170,7 +169,6 @@ public class LongHashMap<V> implements LongMap<V> {
         for(; node != null; head = node, node = node.next );
         node = new Node(key, value, null);
         head.next = node;
-        size++;
         return node.value;
     }
     
