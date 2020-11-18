@@ -29,8 +29,7 @@ public class LongOpenAddressingMap<V> implements LongMap<V> {
     if(verifyLoadFactor()) {
       rehashMap();
     }
-    V val = putIntoBucket(nodes, key, value);
-    return val;
+    return putIntoBucket(nodes, key, value);
   }
   
   @Override
@@ -117,7 +116,7 @@ public class LongOpenAddressingMap<V> implements LongMap<V> {
         i = 0;
       }
     }
-    nodes[i] = new Node<V>(key, value);
+    nodes[i] = new Node<>(key, value);
     size++;
     return (V) nodes[i].value;
   }
@@ -165,7 +164,7 @@ public class LongOpenAddressingMap<V> implements LongMap<V> {
       if (nodes[posStart].key == key) {
         return posStart;
       }
-      if (posStart < buckets) {
+      if (posStart < buckets - 1) {
         posStart++;
       } else {
         posStart = 0;
