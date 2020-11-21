@@ -5,8 +5,13 @@ import static org.junit.jupiter.api.Assertions.*;
 abstract class LongMapTest {
   
   protected void shouldPutTwoStrings(LongMap<String> longMap) {
-    longMap.put(1, "Hello");
-    longMap.put(12345678, "World");
+    String hello = "hello";
+    long keyHello = 1;
+    String world = "world";
+    long keyWorld = 8;
+  
+    assertEquals(hello, longMap.put(keyHello, hello));
+    assertEquals(world, longMap.put(keyWorld, world));
     
     assertEquals(2, longMap.size());
   }
@@ -26,13 +31,13 @@ abstract class LongMapTest {
     Integer oldInteger = 555;
     Integer newInteger = 1000;
     
-    longMap.put(key, oldInteger);
+    assertEquals(oldInteger, longMap.put(key, oldInteger));
     
     assertEquals(1, longMap.size());
     assertTrue(longMap.containsValue(oldInteger));
     assertEquals(oldInteger, longMap.get(key));
     
-    longMap.put(key, newInteger);
+    assertEquals(oldInteger, longMap.put(key, newInteger));
     
     assertEquals(1, longMap.size());
     assertTrue(longMap.containsValue(newInteger));
@@ -44,9 +49,9 @@ abstract class LongMapTest {
     long keyHello = 1;
     String world = "world";
     long keyWorld = 8;
-    
-    longMap.put(keyHello, hello);
-    longMap.put(keyWorld, world);
+  
+    assertEquals(hello, longMap.put(keyHello, hello));
+    assertEquals(world, longMap.put(keyWorld, world));
     
     assertEquals(2, longMap.size());
     assertEquals(hello, longMap.get(keyHello));
@@ -58,9 +63,9 @@ abstract class LongMapTest {
     long keyHello = 1;
     String world = "world";
     long keyWorld = 120000;
-    
-    longMap.put(keyHello, hello);
-    longMap.put(keyWorld, world);
+  
+    assertEquals(hello, longMap.put(keyHello, hello));
+    assertEquals(world, longMap.put(keyWorld, world));
     
     assertEquals(2, longMap.size());
     assertNull(longMap.get(1200));
@@ -71,9 +76,9 @@ abstract class LongMapTest {
     long keyHello = 1;
     String world = "world";
     long keyWorld = 120000;
-    
-    longMap.put(keyHello, hello);
-    longMap.put(keyWorld, world);
+  
+    assertEquals(hello, longMap.put(keyHello, hello));
+    assertEquals(world, longMap.put(keyWorld, world));
     
     assertEquals(2, longMap.size());
     
@@ -90,8 +95,8 @@ abstract class LongMapTest {
     String world = "world";
     long keyWorld = 120000;
     
-    longMap.put(keyHello, hello);
-    longMap.put(keyWorld, world);
+    assertEquals(hello, longMap.put(keyHello, hello));
+    assertEquals(world, longMap.put(keyWorld, world));
     
     assertEquals(2, longMap.size());
     
@@ -106,9 +111,9 @@ abstract class LongMapTest {
     long keyHello = 1;
     String world = "world";
     long keyWorld = 120000;
-    
-    longMap.put(keyHello, hello);
-    longMap.put(keyWorld, world);
+  
+    assertEquals(hello, longMap.put(keyHello, hello));
+    assertEquals(world, longMap.put(keyWorld, world));
     
     assertEquals(2, longMap.size());
     
@@ -118,15 +123,16 @@ abstract class LongMapTest {
     assertEquals(2, longMap.size());
   }
   
-  protected void shouldIsEmptyReturnTrue(LongMap<String> longMap) {
-    longMap.put(1, "Hello");
-    
-    assertTrue(longMap.isEmpty());
-  }
-  
   protected void shouldIsEmptyReturnFalse(LongMap<String> longMap) {
+    String hello = "Hello";
+    assertEquals(hello, longMap.put(1, hello));
     
     assertFalse(longMap.isEmpty());
+  }
+  
+  protected void shouldIsEmptyReturnTrue(LongMap<String> longMap) {
+    
+    assertTrue(longMap.isEmpty());
   }
   
   protected void shouldContainsKeyReturnTrue(LongMap<String> longMap) {
@@ -139,14 +145,15 @@ abstract class LongMapTest {
   protected void shouldContainsKeyReturnFalse(LongMap<String> longMap) {
     long key = 5555555;
     long keyForSearch = key + 1;
-    longMap.put(key, "Hello");
+    String hello = "Hello";
     
+    assertEquals(hello, longMap.put(key, hello));
     assertFalse(longMap.containsKey(keyForSearch));
   }
   
   protected void shouldContainsValueReturnTrue(LongMap<String> longMap) {
     String value = "Hello";
-    longMap.put(1, value);
+    assertEquals(value, longMap.put(1, value));
     
     assertTrue(longMap.containsValue(value));
   }
@@ -154,7 +161,7 @@ abstract class LongMapTest {
   protected void shouldContainsValueReturnFalse(LongMap<String> longMap) {
     String value = "Hello";
     String valueForSearch = value + "2222";
-    longMap.put(1, value);
+    assertEquals(value, longMap.put(1, value));
     
     assertFalse(longMap.containsValue(valueForSearch));
   }
@@ -163,7 +170,7 @@ abstract class LongMapTest {
     long[] expectedKeys = new long[5];
     for (int i = 0; i < expectedKeys.length; i++) {
       expectedKeys[i] = i;
-      longMap.put(i, String.valueOf(i));
+      assertEquals(String.valueOf(i), longMap.put(i, String.valueOf(i)));
     }
     
     assertArrayEquals(expectedKeys, longMap.keys());
@@ -177,7 +184,7 @@ abstract class LongMapTest {
     String[] expectedValues= new String[5];
     for (int i = 0; i < expectedValues.length; i++) {
       expectedValues[i] = String.valueOf(i);
-      longMap.put(i, expectedValues[i]);
+      assertEquals(expectedValues[i], longMap.put(i, expectedValues[i]));
     }
     
     String[] actualValues = longMap.values();
@@ -193,13 +200,17 @@ abstract class LongMapTest {
   }
   
   protected void shouldReturnNotZeroSize(LongMap<String> longMap) {
-    longMap.put(1, "Hello");
+    String hello = "Hello";
+  
+    assertEquals(hello, longMap.put(1, hello));
     assertTrue(longMap.size() > 0);
     assertEquals(1, longMap.size());
   }
   
   protected void shouldClear(LongMap<String> longMap) {
-    longMap.put(1, "Hello");
+    String hello = "Hello";
+  
+    assertEquals(hello, longMap.put(1, hello));
     assertEquals(1, longMap.size());
     
     longMap.clear();
@@ -215,7 +226,7 @@ abstract class LongMapTest {
       if (i > 1) {
         p++;
       }
-      longMap.put(p, i);
+      assertEquals(i, longMap.put(p, i));
     }
     
     assertEquals(size, longMap.size());

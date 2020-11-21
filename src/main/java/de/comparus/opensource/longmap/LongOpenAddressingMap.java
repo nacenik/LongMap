@@ -46,7 +46,7 @@ public class LongOpenAddressingMap<V> implements LongMap<V> {
   
   @Override
   public boolean isEmpty() {
-    return size > 0;
+    return size == 0;
   }
   
   @Override
@@ -103,22 +103,23 @@ public class LongOpenAddressingMap<V> implements LongMap<V> {
     return Long.hashCode(key) & (buckets - 1);
   }
   
-  private V putIntoBucket(Node[] nodes, long key, V value) {
+  private V putIntoBucket(Node<V>[] nodes, long key, V value) {
     int pos = getBucketNumber(key);
-    int i = pos;
-    while (nodes[i] != null) {
-      if (nodes[i].key == key) {
-        return (V) (nodes[i].value = value);
+    while (nodes[pos] != null) {
+      if (nodes[pos].key == key) {
+        V val = nodes[pos].value;
+        nodes[pos].value = value;
+        return val;
       }
-      if (i < buckets - 1) {
-        i++;
+      if (pos < buckets - 1) {
+        pos++;
       } else {
-        i = 0;
+        pos = 0;
       }
     }
-    nodes[i] = new Node<>(key, value);
+    nodes[pos] = new Node<>(key, value);
     size++;
-    return (V) nodes[i].value;
+    return nodes[pos].value;
   }
   
   private boolean verifyLoadFactor() {

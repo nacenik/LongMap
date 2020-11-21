@@ -51,13 +51,13 @@ class LongOpenAddressingMapTest extends LongMapTest {
   }
   
   @Test
-  void shouldIsEmptyReturnTrue() {
-    super.shouldIsEmptyReturnTrue(new LongOpenAddressingMap<>());
+  void shouldIsEmptyReturnFalse() {
+    super.shouldIsEmptyReturnFalse(new LongOpenAddressingMap<>());
   }
   
   @Test
-  void shouldIsEmptyReturnFalse() {
-    super.shouldIsEmptyReturnFalse(new LongOpenAddressingMap<>());
+  void shouldIsEmptyReturnTrue() {
+    super.shouldIsEmptyReturnTrue(new LongOpenAddressingMap<>());
   }
   
   @Test

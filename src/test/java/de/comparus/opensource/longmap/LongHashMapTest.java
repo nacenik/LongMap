@@ -11,6 +11,35 @@ class LongHashMapTest extends LongMapTest {
   }
   
   @Test
+  void shouldDeleteFromOneBucket() {
+    LongHashMap<Integer> longHashMap = new LongHashMap<>();
+    for (int i = 0; i < 5; i++) {
+      Assertions.assertEquals(i, longHashMap.put(8 * i, i));
+    }
+    
+    Assertions.assertEquals(4, longHashMap.remove(8 * 4));
+    Assertions.assertTrue(longHashMap.containsKey(8 * 3));
+    Assertions.assertFalse(longHashMap.containsKey(8 * 4));
+    Assertions.assertEquals(4, longHashMap.size());
+    
+    Assertions.assertEquals(1, longHashMap.remove(8));
+    Assertions.assertTrue(longHashMap.containsKey(8 * 3));
+    Assertions.assertFalse(longHashMap.containsKey(8));
+    Assertions.assertEquals(3, longHashMap.size());
+  }
+  
+  @Test
+  void shouldReturnNullWhenDeleteFromOneBucket() {
+    LongHashMap<Integer> longHashMap = new LongHashMap<>();
+    for (int i = 0; i < 5; i++) {
+      Assertions.assertEquals(i, longHashMap.put(8 * i, i));
+    }
+    
+    Assertions.assertNull(longHashMap.remove(8 * 5));
+    Assertions.assertEquals(5, longHashMap.size());
+  }
+  
+  @Test
   void shouldPutTwoStrings() {
     super.shouldPutTwoStrings(new LongHashMap<>());
   }
@@ -50,13 +79,13 @@ class LongHashMapTest extends LongMapTest {
   }
   
   @Test
-  void shouldIsEmptyReturnTrue() {
-    super.shouldIsEmptyReturnTrue(new LongHashMap<>());
+  void shouldIsEmptyReturnFalse() {
+    super.shouldIsEmptyReturnFalse(new LongHashMap<>());
   }
   
   @Test
-  void shouldIsEmptyReturnFalse() {
-    super.shouldIsEmptyReturnFalse(new LongHashMap<>());
+  void shouldIsEmptyReturnTrue() {
+    super.shouldIsEmptyReturnTrue(new LongHashMap<>());
   }
   
   @Test

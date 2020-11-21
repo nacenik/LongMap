@@ -29,8 +29,7 @@ public class LongHashMap<V> implements LongMap<V> {
         if(verifyLoadFactor()) {
             rehashMap();
         }
-        V val = putInto(nodes, key, value);
-        return val;
+        return putInto(nodes, key, value);
     }
     
     @Override
@@ -43,14 +42,15 @@ public class LongHashMap<V> implements LongMap<V> {
     public V remove(long key) {
         int pos = getBucketNumber(key);
         if(nodes[pos] != null){
-            return removeValue(key, pos);
+            return nodes[pos].next == null ? removeHeadValue(key, pos)
+                    : removeValue(key, pos);
         }
         return null;
     }
     
     @Override
     public boolean isEmpty() {
-        return size > 0;
+        return size == 0;
     }
     
     @Override
@@ -106,31 +106,32 @@ public class LongHashMap<V> implements LongMap<V> {
         return powerOfTwo;
     }
     
-    private V putInto(Node[] nodes, long key, V value) {
+    private V putInto(Node<V>[] nodes, long key, V value) {
         int pos = getBucketNumber(key);
         return nodes[pos] == null ? putIntoBucket(nodes, pos, key, value)
-                : (V) putIntoBucketList(nodes[pos], key, value);
+                : putIntoBucketList(nodes[pos], key, value);
     }
     
     private int getBucketNumber(long key) {
         return Long.hashCode(key) & (buckets - 1);
     }
     
-    private V putIntoBucket(Node[] nodes, int pos, long key, V value) {
+    private V putIntoBucket(Node<V>[] nodes, int pos, long key, V value) {
         nodes[pos] = new Node<>(key, value, null);
         size++;
-        return (V) nodes[pos].value;
+        return nodes[pos].value;
     }
     
     private V putIntoBucketList(Node<V> head, long key, V value) {
         Node<V> node = head;
         for(; node != null; head = node, node = node.next ) {
             if (node.key == key) {
+                V oldValue = node.value;
                 node.value = value;
-                return node.value;
+                return oldValue;
             }
         }
-        node = new Node(key, value, null);
+        node = new Node<>(key, value, null);
         head.next = node;
         size++;
         return node.value;
@@ -153,21 +154,21 @@ public class LongHashMap<V> implements LongMap<V> {
         nodes = newNodes;
     }
     
-    private V putIntoNewMap(Node[] nodes, long key, V value) {
+    private V putIntoNewMap(Node<V>[] nodes, long key, V value) {
         int pos = getBucketNumber(key);
         return nodes[pos] == null ? putIntoNewBucket(nodes, pos, key, value)
-                : (V) putIntoNewBucketList(nodes[pos], key, value);
+                : putIntoNewBucketList(nodes[pos], key, value);
     }
     
-    private V putIntoNewBucket(Node[] nodes, int pos, long key, V value) {
+    private V putIntoNewBucket(Node<V>[] nodes, int pos, long key, V value) {
         nodes[pos] = new Node<>(key, value, null);
-        return (V) nodes[pos].value;
+        return nodes[pos].value;
     }
     
     private V putIntoNewBucketList(Node<V> head, long key, V value) {
         Node<V> node = head;
         for(; node != null; head = node, node = node.next );
-        node = new Node(key, value, null);
+        node = new Node<>(key, value, null);
         head.next = node;
         return node.value;
     }
@@ -184,13 +185,24 @@ public class LongHashMap<V> implements LongMap<V> {
         return null;
     }
     
+    private V removeHeadValue(long key, int pos) {
+        if (nodes[pos].key == key) {
+            V value = nodes[pos].value;
+            nodes[pos] = null;
+            size--;
+            return value;
+        }
+        return null;
+    }
+    
     private V removeValue(long key, int pos) {
         Node<V> node = nodes[pos];
-        for(; nodes[pos] != null; node = nodes[pos], nodes[pos] = nodes[pos].next ) {
-            if (nodes[pos].key == key) {
-                node.next = nodes[pos].next;
-                V value = nodes[pos].value;
-                nodes[pos] = null;
+        Node<V> previousNode = null;
+        for(; node != null; previousNode = node, node = node.next ) {
+            if (node.key == key) {
+                previousNode.next = node.next;
+                V value = node.value;
+                node = null;
                 size--;
                 return value;
             }
@@ -225,12 +237,12 @@ public class LongHashMap<V> implements LongMap<V> {
         return vs;
     }
   
-  private static class Node<V> {
+  private static class Node<R> {
     long key;
-    V value;
-    Node next;
+    R value;
+    Node<R> next;
     
-    public Node(long key, V value, Node next) {
+    public Node(long key, R value, Node<R> next) {
       this.key = key;
       this.value = value;
       this.next = next;
